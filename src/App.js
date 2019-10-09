@@ -1,24 +1,32 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 
+const url = process.env.REACT_APP_API_URL;
+
 function App() {
+  const [todoList, setTodoList] = useState([]);
+
+  const fetchTodoList = async () => {
+    try {
+      const response = await fetch(`${url}/todo`);
+      const json = await response.json();
+      setTodoList(json);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  useEffect(() => {
+    fetchTodoList();
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {todoList.length ? (
+        todoList.map(todo => <p key={todo.id}>{todo.text}</p>)
+      ) : (
+        <p>Empty</p>
+      )}
     </div>
   );
 }
